@@ -21,6 +21,7 @@ class Context
     private $_server  = false;
     private $_data = [];
     private $_cache_path = '/tmp';
+    private $_tmp_path = '/tmp';
 
     public $_ENV;
     public $_GET;
@@ -116,5 +117,12 @@ class Context
     public function get($name, $value = null)
     {
         return $this->_data->getVal($name, $value);
+    }
+
+    public function tempFile( )
+    {
+        $data = func_get_args();
+        $path = implode("/", $data);
+        return tempnam($this->_tmp_path, $path);
     }
 }
