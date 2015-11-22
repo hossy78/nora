@@ -6,3 +6,5 @@ require_once __DIR__.'/../class/AutoLoader.php';
 Nora\AutoLoader::register([
     'Nora' => __DIR__.'/../class'
 ]);
+
+define('TEST_DIR', __DIR__);
