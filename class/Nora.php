@@ -44,19 +44,24 @@ class Nora
         return self::$_engine;
     }
 
-    static public function configure($config, $env, $debug = false)
+    static public function configure($config, $env, $option = [])
     {
         self::$_engine = null;
 
         if (!is_array($env)) $env = [$env];
         array_unshift($env,'all');
 
-        $useCache = $debug ? false: true;
+        self::getEngine()->configure(NORA_APP_NAME, $config, $env, $option);
+        self::setService('config', self::getEngine()->Config());
 
-        self::getEngine()->configure(NORA_APP_NAME, $config, $env, $useCache);
 
         $config = self::getService('config');
 
+        // PHPの設定
+        mb_language($config->read('lang', 'ja'));
+        mb_internal_encoding($config->read('encoding', 'utf-8'));
+
+        // サービスの設定
         if ($config->has('service'))
         {
             foreach($config->read('service') as $k=>$v)

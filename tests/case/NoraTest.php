@@ -15,28 +15,10 @@ class Test extends \PHPUnit_Framework_TestCase
 
     public function testMain()
     {
-        /*
-        Nora::setService('logger', [
-            'class' => 'Nora\System\Logging\Logger\Logger',
-            'method' => 'build',
-            'config' => [
-                'name' => 'NoraTest',
-                'handlers' => [
-                    [
-                        'type'  => 'stream',
-                        'path'  => 'php://stdout',
-                        'level' => 'info',
-                        'processer' => [
-                            'Nora\System\Logging\Logger\Processer\AddInfoProcesser'
-                        ]
-                    ]
-                ]
-            ]
-        ]);
-        */
-
         // セットアップ
-        Nora::Configure(TEST_DIR.'/config/test', 'dev', true);
+        Nora::Configure(TEST_DIR, 'dev', [
+            'config' => 'config/test',
+        ]);
 
         Nora::getService('logger')->err('エラーだよ');
 

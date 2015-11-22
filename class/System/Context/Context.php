@@ -36,6 +36,9 @@ class Context
         $context->_ENV  = Hash::create($_ENV,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
         $context->_GET  = Hash::create($_GET,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
         $context->_POST = Hash::create($_POST,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
+        $context->_data = Hash::create([
+            'cache' => '/tmp'
+        ],Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
 
         return $context;
     }
@@ -103,5 +106,15 @@ class Context
     public function setCachePath($path)
     {
         $this->_cache_path = $path;
+    }
+
+    public function set($name, $value = false)
+    {
+        $this->_data->setVal($name, $value);
+    }
+
+    public function get($name, $value = null)
+    {
+        return $this->_data->getVal($name, $value);
     }
 }

@@ -64,8 +64,14 @@ class HashBase implements ArrayAccess,IteratorAggregate,Countable
         return $this;
     }
 
-    public function setVal($key, $val)
+    public function setVal($key, $val = null)
     {
+        if (is_array($key))
+        {
+            foreach($key as $k=>$v) $this->setVal($k, $v);
+            return $this;
+        }
+
         if (!($this->_option & self::OPT_ALLOW_UNDEFINED_KEY_SET) && !$this->hasVal($key))
         {
             $this->raizeError(self::ERROR_SET_ON_UNDEFINED_KEY, "Undefined Key: $key");
