@@ -47,4 +47,23 @@ class FileInfo
         return Formatter::format($str, $data);
     }
 
+    /**
+     * 書き込む
+     */
+    public static function putContents($file, $data)
+    {
+        if (!  is_dir( dirname($file) ) )
+        {
+            mkdir(dirname($file), 0755, true);
+        }
+        file_put_contents($file, $data);
+    }
+
+    /**
+     * 書き込む
+     */
+    public static function getContents($file)
+    {
+        return file_get_contents($file);
+    }
 }

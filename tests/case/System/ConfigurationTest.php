@@ -15,7 +15,7 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function testMain()
     {
-        $cf = new Configuration( );
+        $cf = new Configuration('test');
 
         $cf->write('hoge', 'fuga');
         $this->assertEquals( $cf->read('hoge'), 'fuga');
@@ -32,7 +32,13 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         $logger = call_user_func($spec['class'].'::'.$spec['method'], $spec['config']);
         $logger->info('ちゃんとロガーが起動できました');
 
+        $cf->save();
+    }
 
+    public function testBuild( )
+    {
+        $c = Configuration::build('hoge', TEST_DIR.'/config/test', ['all','dev','hoge']);
+        $this->assertEquals($c->read('database.connection.default.user'),'hoge');
     }
 }
 

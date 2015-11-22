@@ -23,9 +23,6 @@ class LoggingTest extends \PHPUnit_Framework_TestCase
     {
         // ロガー作成
         $logger = Logger::create('Nora');
-
-        // $this->allMessages($logger);
-
     }
 
     public function allMessages($logger)

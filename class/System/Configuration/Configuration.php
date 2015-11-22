@@ -8,6 +8,8 @@
  * @version 0.0.2
  */
 namespace Nora\System\Configuration;
+use Nora\System\Context\Context;
+use Nora\System\FileSystem\FileInfo;
 
 
 /**
@@ -16,6 +18,62 @@ namespace Nora\System\Configuration;
 class Configuration
 {
     private $_config = [];
+    private $_name;
+    public $_cache;
+
+    /**
+     * 設定を保存する
+     */
+    public function save ( )
+    {
+        $file = Context::singleton()->getCachePath("config", $this->_name);
+        FileInfo::putContents($file, serialize($this->_config));
+    }
+
+    /**
+     * 設定をリストアする
+     */
+    static public function restore($name)
+    {
+        $file = Context::singleton()->getCachePath("config", $name);
+        $c = new Configuration($name);
+        if (file_exists($file))
+        {
+            $c->_config = unserialize(FileInfo::getContents($file));
+        }
+        return $c;
+    }
+
+    /**
+     * ビルド
+     */
+    static public function build ($name, $dir, $env = ['all','dev'], $useCache = true)
+    {
+        $name = $name.'.'.implode('.',$env);
+
+        if ($useCache)
+        {
+            $file = Context::singleton()->getCachePath("config", $name);
+            if (file_exists($file))
+            {
+                $c = self::restore($name);
+                $c->_cache = true;
+                return $c;
+            }
+        }
+
+        $c = new Configuration($name);
+        $c->loadDir($dir, null, $env);
+        $c->_cache = false;
+        $c->save();
+        return $c;
+    }
+
+
+    public function __construct($name)
+    {
+        $this->_name = $name;
+    }
 
     /**
      * 設定を書き込む

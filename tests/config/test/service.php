@@ -1,5 +1,4 @@
 <?php
-use Nora\System\Context\Context;
 
 return [
     'all' => [
@@ -14,17 +13,18 @@ return [
                         'path'  => 'php://stdout',
                         'level' => 'info',
                         'processer' => [
-                            function($log) {
-                                $log['hoge'] = 'huga';
-                            },
-                            function($log) {
-                                $log['ip'] = Context::singleton()->getRemoteIP();
-                                $log['ua'] = Context::singleton()->getUserAgent();
-                                $log['posix_user'] = Context::singleton()->getPosixUser();
-                            }
+                            'Nora\System\Logging\Logger\Processer\AddInfoProcesser'
                         ]
                     ]
                 ]
+            ]
+        ]
+    ],
+    'dev' => [
+        'mysql' => [
+            'class' => 'PDO',
+            'params' => [
+                'dsn' => 'mysql:dbname=test;host=127.0.0.1'
             ]
         ]
     ]

@@ -112,7 +112,13 @@ abstract class Handler
 
         foreach($this->_processer as $p)
         {
-            call_user_func($p, $log);
+            if (is_string($p ))
+            {
+                $p::process($log);
+            }
+            else{
+                call_user_func($p, $log);
+            }
         }
 
         $this->_post($log);

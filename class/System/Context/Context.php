@@ -20,6 +20,7 @@ class Context
     private $_client  = false;
     private $_server  = false;
     private $_data = [];
+    private $_cache_path = '/tmp';
 
     public $_ENV;
     public $_GET;
@@ -86,4 +87,21 @@ class Context
         return posix_getpwuid(posix_getuid())['name'];
     }
 
+    /**
+     * キャッシュパスを取得する
+     */
+    public function getCachePath()
+    {
+        $data = func_get_args();
+        $path = implode("/", $data);
+        return $this->_cache_path.'/'.$path;
+    }
+
+    /**
+     * キャッシュパスを設定
+     */
+    public function setCachePath($path)
+    {
+        $this->_cache_path = $path;
+    }
 }
