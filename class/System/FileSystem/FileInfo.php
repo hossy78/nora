@@ -66,4 +66,19 @@ class FileInfo
     {
         return file_get_contents($file);
     }
+
+    /**
+     * ディレクトリを作成する
+     */
+    public static function mkdir ($file, $perm = 0777)
+    {
+        if (is_dir($file)) return $file;
+
+        if (mkdir($file, $perm, true))
+        {
+            return $file;
+        }
+
+        return false;
+    }
 }

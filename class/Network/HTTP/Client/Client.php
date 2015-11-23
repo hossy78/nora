@@ -55,6 +55,7 @@ class Client
         $this->setOpt([
             'RETURNTRANSFER' => 1,
             'TIMEOUT'        => 2,
+            'FOLLOWLOCATION' => 1,
             'HEADER'         => 1,
             'SSL_VERIFYPEER' => false,
             'SSL_VERIFYHOST' => 0,

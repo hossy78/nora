@@ -56,5 +56,9 @@ class Provider
     public function set($name, $spec)
     {
         $this->_specs[$name] = ServiceSpec::create($spec);
+        if ($this->_specs[$name]->isAutoStart())
+        {
+            $this->get($name);
+        }
     }
 }

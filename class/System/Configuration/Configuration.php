@@ -135,7 +135,7 @@ class Configuration
             {
                 if (isset($data[$v]) && is_array($data[$v]))
                 {
-                    $new_data = array_merge_recursive($new_data, $data[$v]);
+                    $new_data = array_merge($new_data, $data[$v]);
                 }
             }
             $data = $new_data;

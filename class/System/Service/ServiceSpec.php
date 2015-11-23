@@ -42,6 +42,11 @@ class ServiceSpec
         return $this->_opt->getVal('share', true);
     }
 
+    public function isAutoStart( )
+    {
+        return $this->_opt->getVal('autoStart', false);
+    }
+
     public function build($provider)
     {
         if ($this->_opt->hasVal('callback'))
@@ -81,7 +86,7 @@ class ServiceSpec
             return $vars;
         }
 
-        if ($vars[0] === '@')
+        if (is_string($vars) && substr($vars,0,1) === '@')
         {
             return $provider->get(substr($vars,1));
         }

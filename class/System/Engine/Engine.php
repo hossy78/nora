@@ -13,6 +13,9 @@ use Nora\System\Context\Context;
 use Nora\System\Configuration\Configuration;
 use Nora\System\Service\Provider as ServiceProvider;
 
+use Nora\Exception\UndefinedMethodException;
+use Nora\System\Logging\Logger\Logger;
+
 /**
  * Engine
  */
@@ -21,6 +24,7 @@ class Engine
     private $_service_provider;
     private $_config;
     private $_root;
+    private $_logger;
 
     public function __construct ( )
     {
@@ -85,4 +89,43 @@ class Engine
     {
         return $this->_root.'/'.implode('/', func_get_args());
     }
+
+    /**
+     * ロガーをセットする
+     */
+    public function setLogger(Logger $logger)
+    {
+        $this->_logger = $logger;
+    }
+
+    /**
+     * ロガーをセットする
+     */
+    public function getLogger( )
+    {
+        if ($this->_logger)
+        {
+            return $this->_logger;
+        }
+        return false;
+    }
+
+    /**
+     * ログをハンドルする
+     */
+    public function __call($name, $params)
+    {
+        if (defined('Nora\System\Logging\LogLevel::'.strtoupper($name)))
+        {
+            $level = constant('Nora\System\Logging\LogLevel::'.strtoupper($name));
+
+            if ($this->getLogger())
+            {
+                return call_user_func_array([$this->getLogger(), $name], $params);
+            }
+        }
+
+        throw new UndefinedMethodException($this, $name);
+    }
+
 }

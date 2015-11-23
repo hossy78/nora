@@ -37,7 +37,7 @@ class Hash extends HashBase
         $this->_array[$k] = $v;
     }
 
-    protected function _getVal($k)
+    protected function &_getVal($k)
     {
         return $this->_array[$k];
     }

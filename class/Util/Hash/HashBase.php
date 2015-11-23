@@ -40,7 +40,7 @@ class HashBase implements ArrayAccess,IteratorAggregate,Countable
         return $hash;
     }
 
-    private function __construct ($data, $option)
+    protected function __construct ($data, $option)
     {
         if (empty($data)) $data = [];
 
@@ -82,12 +82,12 @@ class HashBase implements ArrayAccess,IteratorAggregate,Countable
         return $this;
     }
 
-    public function getVal($key, $default = null)
+    public function &getVal($key, $default = null)
     {
         if (!$this->hasVal($key) && !($this->_option & self::OPT_ALLOW_UNDEFINED_KEY_GET))
         {
             $this->raizeError(self::ERROR_GET_ON_UNDEFINED_KEY, "Undefined Key: $key");
-            return false;
+            return $default;
         }
 
         if ($this->hasVal($key, $found_key))

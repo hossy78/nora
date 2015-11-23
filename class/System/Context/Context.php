@@ -26,6 +26,7 @@ class Context
     public $_ENV;
     public $_GET;
     public $_POST;
+    public $_COOKIE;
 
     static private $_singleton = false;
 
@@ -37,6 +38,7 @@ class Context
         $context->_ENV  = Hash::create($_ENV,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
         $context->_GET  = Hash::create($_GET,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
         $context->_POST = Hash::create($_POST,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
+        $context->_COOKIE = Hash::create($_COOKIE,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
         $context->_data = Hash::create([
             'cache' => '/tmp'
         ],Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);

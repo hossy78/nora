@@ -19,16 +19,21 @@ class Test extends \PHPUnit_Framework_TestCase
             ->get('http://localhost')
             ->get('http://localhost')
             ->get('http://localhost')
+            ->get('http://localhost')
+            ->get('http://localhost')
+            ->get('http://localhost')
             ;
 
         // 結果
         foreach($b->getResults() as $r)
         {
-            var_Dump(strip_tags($r->body()));
+            echo $r->header();
+            echo strip_tags($r->body());
         }
 
         // クッキー
         var_Dump($b->getCookie());
+
     }
 }
 

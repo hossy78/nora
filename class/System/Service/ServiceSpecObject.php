@@ -29,6 +29,12 @@ class ServiceSpecObject
         return true;
     }
 
+    public function isAutoStart( )
+    {
+        return false;
+    }
+
+
     public function build( )
     {
         return $this->_obj;

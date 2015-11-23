@@ -10,6 +10,7 @@
 
 namespace Nora\System\Logging\Logger;
 
+use Nora\Nora;
 use Nora\Util\Hash\Hash;
 use Nora\System\Logging\Logger\Handler\Handler;
 use Nora\System\Logging\Log;
@@ -75,6 +76,18 @@ class Logger
             );
         }
 
+        if ($options->getVal('withPHPError', false))
+        {
+            // ハンドラ系の登録
+            set_error_handler([$logger, 'phpErrorHandler']);
+            set_exception_handler([$logger, 'phpExceptionHandler']);
+            register_shutdown_function([$logger, 'phpShutdownHandler']);
+        }
+
+        if ($options->getVal('asMainLogger', false))
+        {
+            Nora::setLogger($logger);
+        }
         return $logger;
     }
 
@@ -118,25 +131,39 @@ class Logger
     }
         
 
-
-    private function post($level, $msg, $tags, $context)
+    public function phpShutdownHandler()
     {
-        $context = array_merge([
-            'time' => time(),
-            'ua' => $this->_context->client()['ua'],
-            'ip' => $this->_context->client()['ip'],
-            'user' => $this->_context->server()['owner'],
-            'host' => $this->_context->server()['hostname'],
-            'level' => LogLevel::toString($level),
-            'level_no' => $level
-        ], $context);
+        $error = error_get_last();
 
-
-        $log = Log::create($level, $msg, $tags, $context);
-
-        foreach($this->_handlers as $v)
-        {
-            $v->post($log);
+        // Fatal Errorの処理
+        if ($error['type'] === E_ERROR) {
+            $this->phpErrorHandler(
+                $error['type'],
+                $error['message'],
+                $error['file'],
+                $error['line'],
+                []
+            );
         }
+    }
+
+    public function phpExceptionHandler($e)
+    {
+        // ログを作成
+        $this->log(
+            LogLevel::ERR, [
+                'exp' => get_class($e) .'; '.(string) $e,
+                'msg' => $e->getMessage()
+            ]
+        );
+    }
+
+    public function phpErrorHandler($errno, $errstr, $errfile, $errline, $errcontext)
+    {
+        // ログを作成
+        $this->log(
+            LogLevel::phpToNora($errno), 
+            $message = sprintf("[%s] %s on %s(%s)", $errno, $errstr, $errfile, $errline)
+        );
     }
 }
