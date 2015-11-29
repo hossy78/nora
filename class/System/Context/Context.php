@@ -15,11 +15,10 @@ use Nora\Util\Browser\UserAgent;
 /**
  * コンテクスト
  */
-class Context
+class Context extends BaseContext
 {
     private $_client  = false;
     private $_server  = false;
-    private $_data = [];
     private $_cache_path = '/tmp';
     private $_tmp_path = '/tmp';
 
@@ -29,6 +28,7 @@ class Context
     public $_COOKIE;
 
     static private $_singleton = false;
+
 
     // コンテクストをビルドする
     static public function init ( )
@@ -53,6 +53,24 @@ class Context
             self::$_singleton = self::init();
         }
         return self::$_singleton;
+    }
+
+    /**
+     * HTML出力を使用する
+     */
+    public function useHtmlOutput($flag = null)
+    {
+        static $useHtmlOutput = null;
+
+        if ($flag !== null)
+        {
+            return $useHtmlOutput = $flag;
+        }
+
+        if ($useHtmlOutput == null)
+        {
+            return $this->getUserAgent() !== 'cli';
+        }
     }
 
     /**
@@ -100,7 +118,7 @@ class Context
     {
         $data = func_get_args();
         $path = implode("/", $data);
-        return $this->_cache_path.'/'.$path;
+        return $this->_cache_path.'/'.$this->getPosixUser().'/'.$path;
     }
 
     /**
@@ -109,16 +127,6 @@ class Context
     public function setCachePath($path)
     {
         $this->_cache_path = $path;
-    }
-
-    public function set($name, $value = false)
-    {
-        $this->_data->setVal($name, $value);
-    }
-
-    public function get($name, $value = null)
-    {
-        return $this->_data->getVal($name, $value);
     }
 
     public function tempFile( )

@@ -10,13 +10,12 @@
 
 namespace Nora\Util\Hash;
 
-use ArrayAccess,IteratorAggregate,Countable;
 
 /**
  * ハッシュクラス
  * ====================
  */
-class HashBase implements ArrayAccess,IteratorAggregate,Countable
+class HashBase implements HashIF
 {
     const OPT_IGNORE_CASE = 1;
     const OPT_ALLOW_UNDEFINED_KEY_SET = 2;
@@ -46,7 +45,7 @@ class HashBase implements ArrayAccess,IteratorAggregate,Countable
 
         $this->_option = $option;
 
-        $this->initValues($data);
+        $this->initValues($data, $option);
     }
 
     public function toArray()
@@ -55,7 +54,7 @@ class HashBase implements ArrayAccess,IteratorAggregate,Countable
     }
 
 
-    public function initValues($data)
+    public function initValues($data, $opt = self::OPT_DEFAULT)
     {
         foreach($data as $k=>$v)
         {

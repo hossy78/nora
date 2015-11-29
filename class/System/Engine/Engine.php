@@ -15,24 +15,28 @@ use Nora\System\Service\Provider as ServiceProvider;
 
 use Nora\Exception\UndefinedMethodException;
 use Nora\System\Logging\Logger\Logger;
+use Nora\System\Logging\ClientTrait as LoggingClientTrait;
 
 /**
  * Engine
  */
 class Engine
 {
+    use LoggingClientTrait;
+
     private $_service_provider;
     private $_config;
     private $_root;
-    private $_logger;
 
-    public function __construct ( )
+    public function __construct (Context $context)
     {
+        $this->_context = $context;
     }
 
     public function Context( )
     {
-        return $this->getService('context');
+        // return $this->getService('context');
+        return $this->_context;
     }
 
     public function Config( )
@@ -40,19 +44,14 @@ class Engine
         return $this->_config;
     }
 
-    public function setServiceProvider(ServiceProvider $sp)
-    {
-        $this->_service_provider = $sp;
-    }
-
     public function getService($name)
     {
-        return $this->_service_provider->get($name);
+        return $this->Context()->getService($name);
     }
 
     public function setService($name, $spec)
     {
-        return $this->_service_provider->set($name, $spec);
+        return $this->Context()->setService($name, $spec);
     }
 
     /**
@@ -62,18 +61,18 @@ class Engine
     {
         $this->_root = realpath($root);
 
-        $this->Context()->set($options);
+        $this->Context()->setVal($options);
 
         // CachePathを設定
         $this->Context()->setCachePath(
             $this->getFilePath(
-                $this->Context()->get('cache', '/tmp/cache')
+                $this->Context()->getVal('cache', '/tmp/cache')
             )
         );
 
         // ConfigPathを設定
         $configPath = $this->getFilePath(
-            $this->Context()->get('config', 'config')
+            $this->Context()->getVal('config', 'config')
         );
 
         // Configを作成
@@ -91,38 +90,13 @@ class Engine
     }
 
     /**
-     * ロガーをセットする
-     */
-    public function setLogger(Logger $logger)
-    {
-        $this->_logger = $logger;
-    }
-
-    /**
-     * ロガーをセットする
-     */
-    public function getLogger( )
-    {
-        if ($this->_logger)
-        {
-            return $this->_logger;
-        }
-        return false;
-    }
-
-    /**
      * ログをハンドルする
      */
     public function __call($name, $params)
     {
-        if (defined('Nora\System\Logging\LogLevel::'.strtoupper($name)))
+        if (false !== $this->detectLoggingCall($name, $params))
         {
-            $level = constant('Nora\System\Logging\LogLevel::'.strtoupper($name));
-
-            if ($this->getLogger())
-            {
-                return call_user_func_array([$this->getLogger(), $name], $params);
-            }
+            return true;
         }
 
         throw new UndefinedMethodException($this, $name);

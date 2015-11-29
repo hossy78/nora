@@ -81,4 +81,32 @@ class FileInfo
 
         return false;
     }
+
+    /**
+     * MimeTypeを取得する
+     */
+    public static function getMimeType($data, $ext = false)
+    {
+        static $finfo = null;
+        if ($finfo === null) $finfo = finfo_open(FILEINFO_MIME);
+        $type = finfo_file($finfo, $data);
+
+        if (!$ext) return $type;
+
+        switch(strtok($type, ';'))
+        {
+        case 'image/jpeg':
+        case 'image/jpg':
+            return 'jpeg';
+            break;
+        case 'image/png':
+            return 'png';
+            break;
+        case 'image/gif':
+            return 'gif';
+            break;
+        }
+
+        throw new \Exception(Nora::message('サポートされてないタイプです'));
+    }
 }

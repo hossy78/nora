@@ -24,11 +24,16 @@ class StreamHandler extends Handler
 
     protected function _post($log)
     {
+        if (!is_writable($this->_stream))
+        {
+            die($this->_stream." is not writable ");
+        }
         $d = fopen($this->_stream, "a");
-        flock($d, LOCK_EX);
+        //flock($d, LOCK_EX);
         fwrite($d, $this->format($log)."\n");
-        flock($d, LOCK_UN);
+        //flock($d, LOCK_UN);
         fclose($d);
+
     }
 
     protected function initHandler(Hash $options)

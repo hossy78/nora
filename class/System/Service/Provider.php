@@ -40,6 +40,11 @@ class Provider
         return $obj;
     }
 
+    public function has($name)
+    {
+        return $this->_specs->hasVal($name);
+    }
+
     protected function getSpec($name)
     {
         try

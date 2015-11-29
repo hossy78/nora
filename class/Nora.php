@@ -10,6 +10,7 @@
 namespace Nora;
 
 use Nora\System\Engine\Engine;
+use Nora\System\Context\Context;
 use Nora\System\Service\Provider as ServiceProvider;
 
 if (defined('NORA_APPNAME')) define('NORA_APPNAME', 'Nora');
@@ -20,6 +21,7 @@ if (defined('NORA_APPNAME')) define('NORA_APPNAME', 'Nora');
 class Nora
 {
     static private $_engine = null;
+    static public $cnt = 0;
 
     static public function __callStatic($name, $params)
     {
@@ -30,16 +32,13 @@ class Nora
     {
         if (self::$_engine === null)
         {
-            self::$_engine = new Engine();
+            self::$_engine = new Engine(Context::singleton());
 
             // Engineのセットアップ
-            self::$_engine->setServiceProvider(new ServiceProvider());
+            //self::$_engine->setServiceProvider(new ServiceProvider());
 
             // サービスの組み込み
-            self::$_engine->setService('context', [
-                'class' => 'Nora\System\Context\Context',
-                'method' => 'singleton'
-            ]);
+            self::$_engine->setService('context', self::Context());
         }
         return self::$_engine;
     }
@@ -51,7 +50,8 @@ class Nora
         if (!is_array($env)) $env = [$env];
         array_unshift($env,'all');
 
-        self::getEngine()->configure(NORA_APP_NAME, $config, $env, $option);
+        $user = self::Context()->getPosixUser();
+        self::getEngine()->configure(NORA_APP_NAME.".".$user, $config, $env, $option);
         self::setService('config', self::getEngine()->Config());
 
 
@@ -60,6 +60,9 @@ class Nora
         // PHPの設定
         mb_language($config->read('lang', 'ja'));
         mb_internal_encoding($config->read('encoding', 'utf-8'));
+
+        // Timelimit
+        set_time_limit($config->read('time_limit', 20));
 
         // サービスの設定
         if ($config->has('service'))
@@ -70,6 +73,47 @@ class Nora
             }
         }
 
+        // オートロード
+        if ($config->has('map.class'))
+        {
+            // ノラクラスを読み込む
+            AutoLoader::register($config->read('map.class'));
+        }
 
+        // 出力ハンドラを仕込む
+        self::setService(
+            'output',
+            [
+                'class' => 'Nora\System\IO\Writer\Writer',
+                'method' => 'create',
+                'params' => [
+                    '@context'
+                ]
+            ]
+        );
+
+        // デバッガを仕込む
+        self::setService(
+            'debugger', 
+            [
+                'class' => 'Nora\Develop\Debug\Debugger',
+                'params' => [
+                    '@context'
+                ]
+            ]
+        );
+
+
+    }
+
+    static public function dump($var, $return = false, $options = [])
+    {
+        return \Nora\Develop\Debug\Dumper::dump($var, $return, $options);
+    }
+
+    static public function help($var)
+    {
+        $help = new \Nora\Develop\Document\Help(self::Context());
+        return $help($var);
     }
 }

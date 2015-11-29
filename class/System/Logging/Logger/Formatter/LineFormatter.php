@@ -56,6 +56,7 @@ class LineFormatter extends Formatter
 
         foreach($keys as $k)
         {
+            //$str[] = "$k:".Type::stringify($msg[$k]);
             $str[] = "$k:".Type::stringify($msg[$k]);
         }
 
@@ -76,6 +77,9 @@ class LineFormatter extends Formatter
         switch($log->getLevel())
         {
         case LogLevel::EMERG:
+            $cnt = 6;
+            break;
+        case LogLevel::CRIT:
             $cnt = 6;
             break;
         case LogLevel::ALERT:

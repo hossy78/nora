@@ -13,6 +13,7 @@ use Nora\Util\Hash\Hash;
 use Nora\System\Engine\Engine;
 use Nora\System\Service\Provider as ServiceProvider;
 use Nora\Util\Hash\Exception\HashSetOnUndefinedKey;
+use Nora\Nora;
 
 /**
  * サービススペック
