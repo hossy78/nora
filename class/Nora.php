@@ -77,7 +77,10 @@ class Nora
         if ($config->has('map.class'))
         {
             // ノラクラスを読み込む
-            AutoLoader::register($config->read('map.class'));
+            self::setService(
+                'autoloader',
+                AutoLoader::register($config->read('map.class'))
+            );
         }
 
         // 出力ハンドラを仕込む
@@ -103,7 +106,40 @@ class Nora
             ]
         );
 
+        // バリデータを仕込む
+        self::setService(
+            'validator',
+            [
+                'class' => 'Nora\System\Validation\ValidatorBuilder',
+            ]
+        );
 
+        // 多言語対応
+        self::setService(
+            'translator',
+            [
+                'class' => 'Nora\I18n\Translator'
+            ]
+        );
+
+        // モジュールビルダー
+        self::setService(
+            'module',
+            [
+                'class' => 'Nora\System\Module\ModuleBuilder',
+                'params' => [
+                    '@context'
+                ]
+            ]
+        );
+
+    }
+
+    static public function message($tpl, $params)
+    {
+        return self::getService(
+            'translator'
+        )->message($tpl, $params);
     }
 
     static public function dump($var, $return = false, $options = [])

@@ -19,15 +19,21 @@ use Nora\Util\Hash\Exception\HashSetOnUndefinedKey;
  */
 class Provider
 {
-    public function __construct( )
+    public function __construct($services = [])
     {
         $this->_specs = Hash::create([], Hash::OPT_STRICT|Hash::OPT_IGNORE_CASE|Hash::OPT_ALLOW_UNDEFINED_KEY_SET);
         $this->_cache = Hash::create([], Hash::OPT_STRICT|Hash::OPT_IGNORE_CASE|Hash::OPT_ALLOW_UNDEFINED_KEY_SET);
+
+        $this->set($services);
     }
 
     /**
      * サービスを取得する
      */
+    public function getService($name)
+    {
+        return $this->get($name);
+    }
     public function get($name)
     {
         $spec = $this->getSpec($name);
@@ -58,8 +64,13 @@ class Provider
     /**
      * サービスを登録する
      */
-    public function set($name, $spec)
+    public function set($name, $spec = null)
     {
+        if (is_array($name))
+        {
+            foreach($name as $k=>$v) $this->set($k, $v);
+            return $this;
+        }
         $this->_specs[$name] = ServiceSpec::create($spec);
         if ($this->_specs[$name]->isAutoStart())
         {

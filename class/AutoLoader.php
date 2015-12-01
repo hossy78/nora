@@ -67,7 +67,7 @@ class AutoLoader
                     if (is_numeric($k)) $k = null;
                     self::register($v, $k);
                 }
-                return;
+                return self::singleton();
             }
         }
 
@@ -79,6 +79,8 @@ class AutoLoader
         }else{
             self::singleton()->_ns[$name][] = $directory;
         }
+
+        return self::singleton();
     }
 
     /**

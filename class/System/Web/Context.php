@@ -122,11 +122,11 @@ class Context extends BaseContext
         static $response = null;
 
         if ($response === null){
-            $response = Response::createResponse( );
+            $response = Response::createResponse($this);
 
             // クッキーの挙動をいじる
             $response->defaultCookieOptions([
-                'domain' => $this->url()->host(),
+                'domain' => $this->requestUri()->host(),
                 'path' => '/',
                 'expires' => 1000,
                 'secure' => false
@@ -139,15 +139,20 @@ class Context extends BaseContext
     /**
      * マッチした値を盗る
      */
-    public function matched($key, $filter = 'string', $value = null)
+    public function matched($key, $value = null)
     {
         if (!$this->request()->matched()->hasVal($key))
         {
             return $value;
         }
 
-        $val = $this->request()->matched()->getVal($key);
-        return F::build($filter)->filter($val);
+        return $this->request()->matched()->getVal($key);
+    }
+
+    public function getMatched($v)
+    {
+        $v->assert($this->request()->matched(), $out);
+        return $out;
     }
 
     /**

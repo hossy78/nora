@@ -60,6 +60,9 @@ class Engine
     public function configure ($name, $root, $env, $options)
     {
         $this->_root = realpath($root);
+        $options['root'] = $this->_root;
+        $options['env'] = $env;
+        $options['name'] = $name;
 
         $this->Context()->setVal($options);
 
@@ -76,7 +79,7 @@ class Engine
         );
 
         // Configを作成
-        $this->_config = Configuration::build($name, $configPath, $env, $useCache);
+        $this->_config = Configuration::build($name, $configPath, $env, $useCache = false);
 
         return $this;
     }
@@ -86,7 +89,7 @@ class Engine
      */
     public function getFilePath( )
     {
-        return $this->_root.'/'.implode('/', func_get_args());
+        return $this->Context()->getFilePath(implode('/', func_get_args()));
     }
 
     /**

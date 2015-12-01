@@ -12,6 +12,7 @@ namespace Nora\System\Web;
 use Nora\System\Context\Context as SystemContext;
 use Nora\Nora;
 use Nora\System\Routing\RequestIF;
+use Nora\Util\Hash\Hash;
 
 /**
  * Web Request
@@ -36,6 +37,11 @@ class Request implements RequestIF
             $req->_data = $context->_POST;
         }
         return $req;
+    }
+
+    public function __construct( )
+    {
+        $this->_matched = Hash::create([], Hash::OPT_ALLOW_UNDEFINED_KEY_SET|Hash::OPT_ALLOW_UNDEFINED_KEY_GET);
     }
 
     public function getMethod()
@@ -67,12 +73,17 @@ class Request implements RequestIF
      */
     public function setMatched($matched)
     {
-        $this->_matched = $matched;
+        $this->_matched->setVal($matched);
     }
 
     public function  __toString( )
     {
         return $this->_method.' '.$this->_uri;
+    }
+
+    public function matched( )
+    {
+        return $this->_matched;
     }
 }
 

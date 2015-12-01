@@ -27,6 +27,8 @@ class Context extends BaseContext
     public $_POST;
     public $_COOKIE;
 
+    public $_root = '/';
+
     static private $_singleton = false;
 
 
@@ -39,9 +41,9 @@ class Context extends BaseContext
         $context->_GET  = Hash::create($_GET,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
         $context->_POST = Hash::create($_POST,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
         $context->_COOKIE = Hash::create($_COOKIE,Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
-        $context->_data = Hash::create([
+        $context->setVal([
             'cache' => '/tmp'
-        ],Hash::OPT_ALLOW_ALL|Hash::OPT_IGNORE_CASE);
+        ]);
 
         return $context;
     }
@@ -54,6 +56,7 @@ class Context extends BaseContext
         }
         return self::$_singleton;
     }
+
 
     /**
      * HTML出力を使用する

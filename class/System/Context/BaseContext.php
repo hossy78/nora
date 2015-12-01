@@ -13,6 +13,7 @@ use Nora\System\Service\Provider as ServiceProvider;
 use Nora\Util\Hash\Hash;
 use Nora\Util\Hash\HashDataTrait;
 use Nora\Util\Hash\HashIF;
+use Nora\System\Service\Exception\UndefinedService;
 
 class BaseContext implements HashIF
 {
@@ -68,17 +69,47 @@ class BaseContext implements HashIF
         return $this->getServiceProvider()->get($name);
     }
 
-    public function injectionCall($spec, $args = [])
+    public function injectionCall($spec, $input_args = [], $contexts = [])
     {
         if (is_array($spec) && is_callable($spec[count($spec)-1]))
         {
             $func = array_pop($spec);
+
+            $args = [];
+
             foreach($spec as $v) {
-                array_unshift($args, $this->getService($v));
+                try
+                {
+                    array_push($args, $this->getService($v));
+                }catch(UndefinedService $e){
+                    foreach($contexts as $c)
+                    {
+                        try
+                        {
+                            array_push($args, $c->getService($v));
+                        }catch(UndefinedService $e){
+                            continue;
+                        }
+                        break;
+                    }
+                }
             }
+
+            foreach($input_args as $v) {
+                array_push($args, $v);
+            }
+
             return call_user_func_array($func, $args);
         }
-        return call_user_func_array($spec, $args);
+
+        return call_user_func_array($spec, $input_args);
     }
 
+    /**
+     * ファイルを取得する
+     */
+    public function getFilePath( )
+    {
+        return $this->getVal('root').'/'.implode('/', func_get_args());
+    }
 }
